@@ -66,17 +66,12 @@ vectorizer = PolitenessFeatureVectorizer()
 def score(request):
     """
     :param request - The request document to score
-    :type request - dict with 'sentences' and 'parses' field
-        sample (taken from test_documents.py)--
+    :type requests - list of dict with 'text' field
+        sample --
         {
-            'sentences': [
-                "Have you found the answer for your question?",
-                "If yes would you please share it?"
+            'text': [
+                "Have you found the answer for your question? If yes would you please share it?"
             ],
-            'parses': [
-                ["csubj(found-3, Have-1)", "dobj(Have-1, you-2)", "root(ROOT-0, found-3)", "det(answer-5, the-4)", "dobj(found-3, answer-5)", "poss(question-8, your-7)", "prep_for(found-3, question-8)"],
-                ["prep_if(would-3, yes-2)", "root(ROOT-0, would-3)", "nsubj(would-3, you-4)", "ccomp(would-3, please-5)", "nsubj(it-7, share-6)", "xcomp(please-5, it-7)"]
-            ]
         }
 
     returns class probabilities as a dict
@@ -109,15 +104,16 @@ if __name__ == "__main__":
     for doc in TEST_DOCUMENTS:
 
         probs = score(doc)
-	pred = int(probs['polite'] > 0.5)
-        actual = int(doc['score'] > 0.0)
-        acc += int(pred == actual)
-    print acc/int(TEST_DOCUMENTS)
+#	pred = int(probs['polite'] > 0.5)
+#        actual = int(doc['score'] > 0.0)
+#        acc += int(pred == actual)
+#    print acc/int(TEST_DOCUMENTS)
 
-#        print("====================")
-#        print("Text: ", doc)
-#        print("\tP(polite) = %.3f" % probs['polite'])
-#        print("\tP(impolite) = %.3f" % probs['impolite'])
-#        print("\n")
+        print("====================")
+        print("Text: ", doc)
+        print("\tP(polite) = %.3f" % probs['polite'])
+        print("\tP(impolite) = %.3f" % probs['impolite'])
+        print("\n")
+
 
 

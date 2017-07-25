@@ -12,13 +12,6 @@ from sklearn.model_selection import StratifiedKFold
 
 from features.vectorizer import PolitenessFeatureVectorizer
 from sklearn.model_selection import LeaveOneOut
-"""
-Warning Traceback
-"""
-
-import traceback
-import warnings
-import sys
 
 """
 Sample script to train a politeness SVM
@@ -48,9 +41,7 @@ def train_svm(documents, ntesting=500):
     with open("features.json", "w") as w:
          json.dump(documents, w)
     print "DUMPED"
-#    with open("features.json") as f:
-#         documents = json.load(f)
- 
+
     PolitenessFeatureVectorizer.generate_bow_features(documents)
 
     # For good luck
@@ -70,7 +61,7 @@ def train_svm(documents, ntesting=500):
     print "Fitting"
     clf = svm.SVC(C=0.02, kernel='linear', probability=True)
     loocv = LeaveOneOut()
-    scores = cross_val_score(clf, X, y, cv=10)
+    scores = cross_val_score(clf, X, y, cv=loocv)
 #    clf.fit(X, y)
 
     # Test

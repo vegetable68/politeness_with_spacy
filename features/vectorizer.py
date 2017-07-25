@@ -88,6 +88,8 @@ class PolitenessFeatureVectorizer:
             document['parses'] = []
              
             for s in document['sentences']: 
+                # Spacy inclues punctuation in dependency parsing, which would lead to errors in feature extraction
+                s = s.translate(None, string.punctuation)
                 doc = nlp(unicode(s, "utf-8"))
                 cur = []
                 for sent in doc.sents: 
@@ -147,16 +149,38 @@ if __name__ == "__main__":
     vectorizer = PolitenessFeatureVectorizer()
     documents = TEST_DOCUMENTS
     documents = PolitenessFeatureVectorizer.preprocess(documents)
-    #print(documents[1])
 
+    cnt = 0
+    tot = 0
+    tt = 0
+    outl = []
     for doc in documents:
         f = vectorizer.features(doc)
 
         # Print summary of features that are present
-        print "\n===================="
-        print "Text: ", doc['text']
-        print "\tUnigrams, Bigrams: %d" % len(filter(lambda x: f[x] > 0 and ("UNIGRAM_" in x or "BIGRAM_" in x), f.iterkeys()))
-        print "\tPoliteness Strategies: \n\t\t%s" % "\n\t\t".join(filter(lambda x: f[x] > 0 and "feature_politeness_" in x, f.iterkeys()))
-        print "\n"
+   #     print "\n===================="
+   #     print "Text: ", doc['text']
+   #     print "\tUnigrams, Bigrams: %d" % len(filter(lambda x: f[x] > 0 and ("UNIGRAM_" in x or "BIGRAM_" in x), f.iterkeys()))
+   #     print "\tPoliteness Strategies: \n\t\t%s" % "\n\t\t".join(filter(lambda x: f[x] > 0 and "feature_politeness_" in x, f.iterkeys()))
+   #     print "\n"
+        
+        feat = 'Deference'
+        if doc['score'] >=  0.514399314882 and f["feature_politeness_==%s=="%(feat)] > 0:
+           cnt += 1
+        if doc['score'] >= 0.514399314882:
+           tt += 1
+ 
+        if f["feature_politeness_==%s=="%(feat)] > 0:
+           outl.append(doc['text'])
+           tot += 1
+     #      print "\n===================="
+     #      print "Text: ", doc['text']
+     #      print doc['parses']
+     #      print doc['score']
+#           print "\tUnigrams, Bigrams: %d" % len(filter(lambda x: f[x] > 0 and ("UNIGRAM_" in x or "BIGRAM_" in x), f.iterkeys()))
+#           print "\tPoliteness Strategies: \n\t\t%s" % "\n\t\t".join(filter(lambda x: f[x] > 0 and "feature_politeness_" in x, f.iterkeys()))
+#           print "\n"
+
+    print cnt, tot, tt, float(cnt) / tot
 
 
