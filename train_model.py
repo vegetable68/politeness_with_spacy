@@ -3,6 +3,7 @@ import json
 import random
 import cPickle
 import numpy as np
+import os
 
 from sklearn import svm
 from scipy.sparse import csr_matrix
@@ -24,12 +25,11 @@ and treat this as a regression problem
 """
 
 
-def train_svm(documents, ntesting=500):
+def train_svm(documents):
     """
     :param documents- politeness-annotated training data
     :type documents- list of dicts
-        each document must be preprocessed and
-        'sentences' and 'parses' and 'score' fields.
+        each document contains a 'text' field with the text of it.
 
     :param ntesting- number of docs to reserve for testing
     :type ntesting- int
@@ -46,29 +46,16 @@ def train_svm(documents, ntesting=500):
 
     # For good luck
     random.shuffle(documents)
-#    testing = documents[-ntesting:]
-#    documents = documents[:-ntesting]
-
-    # SAVE FOR NOW
-#    cPickle.dump(testing, open("testing-data.p", 'w'))
-
     X, y = documents2feature_vectors(documents)
-  #  X, y = cPickle.load(open("training_features.p"))
-#    cPickle.dump([X, y], open("training_features.p", 'w'))
-    print(X.shape)
-#    Xtest, ytest = documents2feature_vectors(testing)
 
     print "Fitting"
     clf = svm.SVC(C=0.02, kernel='linear', probability=True)
-    loocv = LeaveOneOut()
-    scores = cross_val_score(clf, X, y, cv=loocv)
-#    clf.fit(X, y)
+ #   loocv = LeaveOneOut()
+ #   scores = cross_val_score(clf, X, y, cv=loocv)
+    clf.fit(X, y)
 
-    # Test
-#    y_pred = clf.predict(Xtest)
-#    print(classification_report(ytest, y_pred))
-    print(scores.mean())
-    print scores
+#    print(scores.mean())
+#    print scores
 
     return clf
 
@@ -91,16 +78,16 @@ def documents2feature_vectors(documents):
     y = np.asarray(y)
     return X, y
 
-
+MODEL_FILENAME = os.path.join(os.path.split(__file__)[0], 'politeness-svm.p')   
 
 if __name__ == "__main__":
 
 
     """
-    Train a dummy model off our 4 sample request docs
+    Train a model off the wikipedia dataset
     """
 
-    from test_documents import TEST_DOCUMENTS
+    from train_documents import DOCUMENTS
 
-    train_svm(TEST_DOCUMENTS, ntesting=500)
-
+    clf = train_svm(DOCUMENTS)
+    cPickle.dump(clf, open(MODEL_FILENAME, 'w')) 

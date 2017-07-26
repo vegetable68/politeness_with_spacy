@@ -7,6 +7,8 @@ from itertools import chain
 from collections import defaultdict
 from spacy.en import English
 from nltk.stem.wordnet import WordNetLemmatizer
+import json
+import re
 
 # local import
 from politeness_strategies import get_politeness_strategy_features
@@ -57,8 +59,7 @@ class PolitenessFeatureVectorizer:
         """
         document must be a dict of the following format--
             {
-                'sentences': ["sentence str"],
-                'parses': [[dependency parse list]]
+                'text': "text str",
             }
         """
         feature_dict = {}
@@ -89,8 +90,15 @@ class PolitenessFeatureVectorizer:
              
             for s in document['sentences']: 
                 # Spacy inclues punctuation in dependency parsing, which would lead to errors in feature extraction
-                s = s.translate(None, string.punctuation)
-                doc = nlp(unicode(s, "utf-8"))
+                bak = s
+                s = ""
+                for x in bak:
+                    if x in string.punctuation:
+                       s += " "
+                    else:
+                       s += x
+                s = ' '.join(s.split())
+                doc = nlp(s)#unicode(s, "utf-8"))
                 cur = []
                 for sent in doc.sents: 
                     pos = sent.start
@@ -115,8 +123,7 @@ class PolitenessFeatureVectorizer:
 
             each document must be a dict
             {
-                'sentences': ["sentence one string", "sentence two string"],
-                'parses': [ ["dep(a,b)"], ["dep(b,c)"] ]
+                'text': 'text'
             }
         """
         unigram_counts, bigram_counts = defaultdict(int), defaultdict(int)
@@ -136,6 +143,13 @@ class PolitenessFeatureVectorizer:
         cPickle.dump(unigram_features, open(PolitenessFeatureVectorizer.UNIGRAMS_FILENAME, 'w'))
         cPickle.dump(bigram_features, open(PolitenessFeatureVectorizer.BIGRAMS_FILENAME, 'w'))
 
+def alphas(s):
+    bak = s
+    s = ""
+    for x in bak:
+        if x.isalpha():
+           s += x
+    return s
 
 
 if __name__ == "__main__":
@@ -150,37 +164,14 @@ if __name__ == "__main__":
     documents = TEST_DOCUMENTS
     documents = PolitenessFeatureVectorizer.preprocess(documents)
 
-    cnt = 0
-    tot = 0
-    tt = 0
-    outl = []
     for doc in documents:
         f = vectorizer.features(doc)
 
         # Print summary of features that are present
-   #     print "\n===================="
-   #     print "Text: ", doc['text']
-   #     print "\tUnigrams, Bigrams: %d" % len(filter(lambda x: f[x] > 0 and ("UNIGRAM_" in x or "BIGRAM_" in x), f.iterkeys()))
-   #     print "\tPoliteness Strategies: \n\t\t%s" % "\n\t\t".join(filter(lambda x: f[x] > 0 and "feature_politeness_" in x, f.iterkeys()))
-   #     print "\n"
+        print "\n===================="
+        print "Text: ", doc['text']
+        print "\tUnigrams, Bigrams: %d" % len(filter(lambda x: f[x] > 0 and ("UNIGRAM_" in x or "BIGRAM_" in x), f.iterkeys()))
+        print "\tPoliteness Strategies: \n\t\t%s" % "\n\t\t".join(filter(lambda x: f[x] > 0 and "feature_politeness_" in x, f.iterkeys()))
+        print "\n"
         
-        feat = 'Deference'
-        if doc['score'] >=  0.514399314882 and f["feature_politeness_==%s=="%(feat)] > 0:
-           cnt += 1
-        if doc['score'] >= 0.514399314882:
-           tt += 1
- 
-        if f["feature_politeness_==%s=="%(feat)] > 0:
-           outl.append(doc['text'])
-           tot += 1
-     #      print "\n===================="
-     #      print "Text: ", doc['text']
-     #      print doc['parses']
-     #      print doc['score']
-#           print "\tUnigrams, Bigrams: %d" % len(filter(lambda x: f[x] > 0 and ("UNIGRAM_" in x or "BIGRAM_" in x), f.iterkeys()))
-#           print "\tPoliteness Strategies: \n\t\t%s" % "\n\t\t".join(filter(lambda x: f[x] > 0 and "feature_politeness_" in x, f.iterkeys()))
-#           print "\n"
-
-    print cnt, tot, tt, float(cnt) / tot
-
 

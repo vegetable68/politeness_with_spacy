@@ -92,7 +92,7 @@ firstperson_start.__name__ = "1st person start"
 hello = lambda p: (getleftpos(p) == 1 and getleft(p) in ("hi","hello","hey")) or (getrightpos(p) == 1 and getright(p) in ("hi","hello","hey"))
 hello.__name__ = "Indirect (greeting)"
 
-really = lambda p: (getright(p) == "fact" and getdeptag(p) == "pobj" and getleft(p) == "in") or remove_numbers(p) in ("det(point, the)","det(reality, the)","det(truth, the)") or len(set([getleft(p), getright(p)]).intersection(["really", "actually", "honestly", "surely"])) > 0
+really = lambda p: (getright(p) == "fact" and getdeptag(p) == "pobj" and getleft(p) == "in") or (remove_numbers(p) in ("det(point, the)","det(reality, the)","det(truth, the)") and getleftpos(p) - getrightpos(p) == 1) or len(set([getleft(p), getright(p)]).intersection(["really", "actually", "honestly", "surely"])) > 0
 really.__name__ = "Factuality"
 
 why = lambda p: (getleftpos(p) in (1,2) and getleft(p) in ("what","why","who","how")) or (getrightpos(p) in (1,2) and getright(p) in ("what","why","who","how"))

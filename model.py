@@ -37,17 +37,6 @@ except:
     sys.exit(2)
 
 ####
-# Check versions for sklearn, scipy, numpy, nltk
-# Don't error out, just notify
-
-packages2versions = [("scikit-learn", sklearn, "0.15.1"), ("numpy", np, "1.9.0"), ("nltk", nltk, "3.0.0"), ("scipy", scipy, "0.12.0")]
-
-for name, package, expected_v in packages2versions:
-    if package.__version__ < expected_v:
-        sys.stderr.write("Warning: package '%s', expected version >= %s, detected %s. Code functionality not guaranteed.\n" % (name, expected_v, package.__version__))
-
-
-####
 
 from features.vectorizer import PolitenessFeatureVectorizer
 
@@ -104,13 +93,9 @@ if __name__ == "__main__":
     for doc in TEST_DOCUMENTS:
 
         probs = score(doc)
-#	pred = int(probs['polite'] > 0.5)
-#        actual = int(doc['score'] > 0.0)
-#        acc += int(pred == actual)
-#    print acc/int(TEST_DOCUMENTS)
 
         print("====================")
-        print("Text: ", doc)
+        print("Text: ", doc['text'])
         print("\tP(polite) = %.3f" % probs['polite'])
         print("\tP(impolite) = %.3f" % probs['impolite'])
         print("\n")
