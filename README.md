@@ -1,8 +1,8 @@
 Stanford Politeness API
 =======================
-#### Version 1.02 (developing) 
+#### Version 1.02
 
- This Python implementation uses spacy as parsing tool and no longer requires the user to parse the document.(based on Version 1.01 implemented by Yiqing Hua)
+ This Python implementation uses spacy as parsing tool and no longer requires the user to parse the document.
 
 #### Version 2.00 (released March 2017)
  
